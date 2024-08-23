@@ -1,12 +1,60 @@
 import {Link, useParams} from "react-router-dom";
+import {useState} from "react";
+import Perks from "../Perks.jsx"
+import axios from "axios";
+import PhotosUploader from "../PhotosUploader";
 
 export default function PlacesPage() {
     const {action} = useParams();
+    const [title,setTitle] = useState('');
+    const [address, setAddress] = useState('');
+    const [addedPhotos, setAddedPhotos] = useState([]);
+    const [description, setDescription] = useState('');
+    const [perks, setPerks] = useState([]);
+    const [extraInfo, setExtraInfo] = useState('');
+    const [checkIn, setCheckIn] = useState('');
+    const [checkOut, setCheckOut] = useState('');
+    const [maxGuests, setMaxGuests] = useState(1);
+    const [redirect, setRedirect] = useState('');
+
+    function inputHeader(text) { //Function for style of title of a section
+        return(
+            <h2 className="text-2xl mt-4">{text}</h2>
+        );
+    }
+    function inputDescription(text) { //Function for stle of description of a section
+        return (
+            <p className="text-gray-500 text-sm">{text}</p>
+        );
+    }
+    function preInput(header, description) { //Layout function for title of section and text box for description of the section
+        return (
+            <>
+                {inputHeader(header)}
+                {inputDescription(description)}
+            </>
+        );
+    }
+
+    async function addNewPlace(ev) {
+        ev.preventDefault();
+        const {data} = await axios.post('/places', {
+            title, address, addedPhotos, 
+            description, perks, extraInfo, 
+            checkIn, checkOut, maxGuests
+        });
+        setRedirect('/account/places');
+    }
+
+    if(redirect) {
+        return <Navigate to={redirect} />
+    }
+
     return(
         <div>
-            {action !== 'new' && (
+            {action !== 'new' && ( //If it is not new, show the new button
                 <div className="text-center">
-                <Link className="inline-flex gap-1 bg-primary text-white px-6 py-2 rounded-full" to={'/account/places/new'}>
+                <Link className="inline-flex gap- bg-primary text-white px-6 py-2 rounded-full" to={'/account/places/new'}> {/* style for "My accommodations page" */}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -14,55 +62,40 @@ export default function PlacesPage() {
                 </Link>
             </div>
             )}
-            {action === 'new' && (
+            {action === 'new' && ( //If it is new, show the form
                 <div>
-                    <form>
-                        <h2 className="text-xl mt-4">Title</h2>
-                        <p className="text-gray-500 text-sm">Title for your place. should be short and catchy as in advertisment</p>
-                        <input type="text" placeholder="title, for example: My lovely apt"/>
-                        <h2 className="text-xl mt-4">Address</h2>
-                        <p className="text-gray-500 text-sm">Address to this place</p>
-                        <input type="text" placeholder="address"/>
-                        <h2 className="text-xl mt-4">Photos</h2>
-                        <p className="text-gray-500 text-sm">more = better</p>
-                        <div className="flex">
-                            <input type="text" placeholder={'Add using a link ....jpg'}></input>
-                            <button className="bg-gray-200 px-4 rounded-2xl">Add&nbsp;photo</button>
+                    <form onSubmit={addNewPlace}>
+                        {preInput('Title', 'Title for your place. should be short and catchy as in advertisment')}
+                        <input type="text" value={title} onChange={ev => setTitle(ev.target.value)} placeholder="Title, for example: My lovely apt"/> {/* title description placeholder */}
+                        {preInput('Address', 'Address to this place')}
+                        <input type="text" value={address} onChange={ev => setAddress(ev.target.value)} placeholder="Address"/>
+                        {preInput('Photos', 'more = better')}
+                        <PhotosUploader addedPhotos={addedPhotos} onChange={setAddedPhotos} />
+                        {preInput('Description', 'Description of the place')}
+                        <textarea value={description} onChange={ev => setDescription(ev.target.value)}/> {/* description description (no placeholder yet) */}
+                        {preInput('Perks', 'Select all the perks of your place')}
+                        <div className="grid mt-2 gap-2 grid-cols-2 md:grid-cols-3 lg-cols-6"> {/* style for listing of perks for md and lg screens */}
+                            <Perks selected={perks} onChange={setPerks} />
                         </div>
-                        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                            <button className="flex gap-1 justify-center border bg-transparent rounded-2xl p-8 text-2xl text-gray-600">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-8">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                                </svg>
-                                Upload
-                            </button>
+                        {preInput('Extra Information', 'House rules, etc')}
+                        <textarea value={extraInfo} onChange={ev => setExtraInfo(ev.target.value)}/> {/* extra info description */}
+                        {preInput('Check-in & check-out times', 'Add check in and out times, remember to add time windows for cleaning the room between guests')}
+                        <div className="grid gap-2 sm:grid-cols-3">
+                            <div>
+                                <h3 className="mt-2 -mb-1">Check-in time</h3>
+                                <input type="text" value={checkIn} onChange={ev => setCheckIn(ev.target.value)} placeholder="2:00pm"/> {/* check-in time description placeholder */}
+                            </div>
+                            <div>
+                                <h3 className="mt-2 -mb-1">Check-out time</h3>
+                                <input type="text" value={checkOut} onChange={ev => setCheckOut(ev.target.value)} placeholder="11:00am"/> {/* check-out description placeholder */}
+                            </div>
+                            <div>
+                                <h3 className="mt-2 -mb-1">Maximum number of guests</h3>
+                                <input type="number" value={maxGuests} onChange={ev => setMaxGuests(ev.target.value)} /> {/* max guests description(no placeholder). pick number of guests */}
+                            </div>
                         </div>
-                        <h2 className="text-xl mt-4">Description</h2>
-                        <p className="text-gray-500 text-sm">Description of the place</p>
-                        <textarea />
-                        <h2 className="text-xl mt-4">Perks</h2>
-                        <p className="text-gray-500 text-sm">select all the perks of your place</p>
                         <div>
-                            <label>
-                                <input type="checkbox"/>
-                                <span>Wifi</span>
-                            </label>
-                            <label>
-                                <input type="checkbox"/>
-                                <span>Free parking</span>
-                            </label>
-                            <label>
-                                <input type="checkbox"/>
-                                <span>TV</span>
-                            </label>
-                            <label>
-                                <input type="checkbox"/>
-                                <span>Pets allowed</span>
-                            </label>
-                            <label>
-                                <input type="checkbox"/>
-                                <span>Private entrance</span>
-                            </label>
+                            <button className="primary my-4">Save</button> {/* style for save button */}
                         </div>
                     </form>
                 </div>
