@@ -152,12 +152,11 @@ app.put('/places', async (req, res) => {
         if (err) throw err;
         const placeDoc = await Place.findById(id); //user information
         if(userData.id === placeDoc.owner.toString()) { //check if place owner is the same the id of the user; change object to string
-            placeDoc.set({
-                owner: userData.id, 
+            placeDoc.set({ 
                 title, address, photos:addedPhotos, description, 
                 perks, extraInfo, checkIn, checkOut, maxGuests
             });
-            placeDoc.save();
+            await placeDoc.save();
             res.json('ok');
         }
     });
