@@ -112,19 +112,19 @@ app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
     res.json(uploadedFiles);
 });
 
-app.post('/places', (req, res) => {
+app.post('/user-places', (req, res) => {
     const {token} = req.cookies;
     const {
         title, address, addedPhotos, 
         description, perks, extraInfo, 
-        checkIn, checkOut, maxGuests
+        checkIn, checkOut, maxGuests, price
     } = req.body;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) throw err;
         const placeDoc = await Place.create({
             owner: userData.id, title, address, 
             photos:addedPhotos, description, perks, extraInfo, 
-            checkIn, checkOut, maxGuests
+            checkIn, checkOut, maxGuests, price
         });
         res.json(placeDoc);
     });
@@ -146,7 +146,7 @@ app.put('/places', async (req, res) => {
     const {token} = req.cookies;
     const {
         id, title, address, addedPhotos, description, 
-        perks, extraInfo, checkIn, checkOut, maxGuests, 
+        perks, extraInfo, checkIn, checkOut, maxGuests, price
     } = req.body;
     jwt.verify(token, jwtSecret, {}, async (err, userData) => { //verify the id
         if (err) throw err;
@@ -154,12 +154,16 @@ app.put('/places', async (req, res) => {
         if(userData.id === placeDoc.owner.toString()) { //check if place owner is the same the id of the user; change object to string
             placeDoc.set({ 
                 title, address, photos:addedPhotos, description, 
-                perks, extraInfo, checkIn, checkOut, maxGuests
+                perks, extraInfo, checkIn, checkOut, maxGuests, price
             });
             await placeDoc.save();
             res.json('ok');
         }
     });
 });
+
+app.get('/places', async (req, res) => {
+    res.json( await Place.find() );
+})
 
 app.listen(4000);
