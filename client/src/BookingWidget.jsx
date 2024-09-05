@@ -1,7 +1,8 @@
-import {useState, useContext} from "react";
+import {useState, useEffect, useContext} from "react";
 import {differenceInCalendarDays} from "date-fns";
 import axios from "axios";
 import {Navigate} from "react-router-dom";
+import {UserContext} from "./UserContext.jsx";
 
 export default function BookingWidget({place}) {
     const [checkIn, setCheckIn] = useState('');
@@ -26,11 +27,11 @@ export default function BookingWidget({place}) {
     async function bookThisPlace() {
         const response = await axios.post('/bookings', {
             checkIn, checkOut, numberOfGuests, name, phone,
-            place: place._id, 
-            price: numberOfNights * place.price,
+            place:place._id, 
+            price:numberOfNights * place.price,
         });
         const bookingId = response.data._id;
-        setRedirect('/account/bookings/${bookingId}');
+        setRedirect(`/account/bookings/${bookingId}`);
     }
 
     if(redirect) {
@@ -40,7 +41,7 @@ export default function BookingWidget({place}) {
     return (
         <div className="bg-white shadow p-4 rounded-2xl">
             <div className="text-2xl text-center"> {/* style for price text */}
-                Price: {place.price} / per night 
+                Price: ${place.price} / per night 
             </div>
             <div className="border rounded-2xl mt-4">
                 <div className="flex">

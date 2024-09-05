@@ -12,7 +12,7 @@ export default function AccountNav() {
             classes += ' bg-primary text-white';
         }
         else {
-            classes += 'bg-gray-200';
+            classes += ' bg-gray-200';
         }
         return classes;
     }

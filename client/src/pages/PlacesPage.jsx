@@ -2,6 +2,7 @@ import {Link, useParams} from "react-router-dom";
 import AccountNav from "../AccountNav";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import PlaceImg from "../PlaceImg";
 
 export default function PlacesPage() {
     const [places, setPlaces] = useState([]);
@@ -15,7 +16,7 @@ export default function PlacesPage() {
             <AccountNav />
             <div className="text-center">
                 <br />
-                <Link className="inline-flex gap- bg-primary text-white px-6 py-2 rounded-full" to={'/account/places/new'}> {/* style for "My accommodations page" */}
+                <Link className="inline-flex gap-1 bg-primary text-white px-6 py-2 rounded-full" to={'/account/places/new'}> {/* style for "My accommodations page" */}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -24,7 +25,7 @@ export default function PlacesPage() {
             </div>
             <div className="mt-4">
                 {places.length > 0 && places.map(place => (
-                    <Link to={'/account/places/' + place._id} className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl">
+                    <Link to={'/account/places/' + place._id} className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl" key={place._id}>
                         <div className="flex w-32 h-32 bg-gray-300 grow shrink-0">
                             <PlaceImg place={place} />
                         </div>

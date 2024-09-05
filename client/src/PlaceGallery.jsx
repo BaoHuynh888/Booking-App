@@ -1,4 +1,5 @@
 import {useState} from "react";
+//import Image from "./Image.jsx";
 
 export default function PlaceGallery({place}) {
     const [showAllPhotos, setShowAllPhotos] = useState(false);
@@ -16,14 +17,14 @@ export default function PlaceGallery({place}) {
                             Close
                         </button>
                     </div>
-                    {place.photos?.length > 0 && place.photos.map(photo => (
+                    {place?.photos?.length > 0 && place.photos.map(photo => (
                         <div>
                             <img src={'http://localhost:4000/uploads/' + photo} alt=""/>
                         </div>
                     ))}
                 </div>
             </div>
-        )
+        );
     }
 
     return (
